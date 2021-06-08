@@ -17,6 +17,8 @@ public class Employee implements Serializable{
     private String name; 
     private String email;
     private String jobTittle;
+    
+
 
     public Employee() {
     }
@@ -26,7 +28,7 @@ public class Employee implements Serializable{
         this.name = name;
         this.email = email;
         this.jobTittle = jobTittle;
-        this.profilePicture = profilePicture;
+
     }
 
     public Long getId() {
