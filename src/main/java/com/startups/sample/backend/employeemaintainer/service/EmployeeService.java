@@ -1,46 +1,48 @@
 package com.startups.sample.backend.employeemaintainer.service;
 
-
+import com.startups.sample.backend.employeemaintainer.CustomExceptions.UserNotFoundException;
 import com.startups.sample.backend.employeemaintainer.model.Employee;
 import com.startups.sample.backend.employeemaintainer.repo.EmployeeRepo;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import com.startups.sample.backend.employeemaintainer.CustomExceptions.UserNotFoundException;
-
-
-
-
 @Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class EmployeeService {
+    
     private final EmployeeRepo employeeRepo;
 
-    @Autowired
-    public EmployeeService(EmployeeRepo employeeRepo) {
-        this.employeeRepo = employeeRepo;
-    }
-
     public Employee addEmployee(Employee employee) {
+        log.info("Adding new employee: {}", employee.getName());
         return employeeRepo.save(employee);
     }
 
-    public List findAllEmployees() {
-        return (List) employeeRepo.findAll();
+    public List<Employee> findAllEmployees() {
+        log.info("Fetching all employees");
+        return employeeRepo.findAll();
     }
 
     public Employee updateEmployee(Employee employee) {
+        log.info("Updating employee with id: {}", employee.getId());
+        findEmployeeById(employee.getId()); // Verify employee exists
         return employeeRepo.save(employee);
     }
 
-    public Employee findEmployeeById(Long id){
-        return employeeRepo.findEmployeeById(id)
-        .orElseThrow(() -> new UserNotFoundException("User with id:"+ id + " does not exists"));
+    public Employee findEmployeeById(Long id) {
+        log.info("Finding employee with id: {}", id);
+        return employeeRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Employee with id: " + id + " not found"));
     }
 
     public void deleteEmployee(Long id) {
-        employeeRepo.deleteEmployeeById(id);
+        log.info("Deleting employee with id: {}", id);
+        findEmployeeById(id); // Verify employee exists before deleting
+        employeeRepo.deleteById(id);
     }
 }
